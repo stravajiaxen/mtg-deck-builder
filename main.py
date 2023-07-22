@@ -2,6 +2,7 @@ import streamlit as st
 from builder.lists import *
 from builder.edhrec import *
 from builder.compare import *
+from builder.moxfield import *
 from streamlit_option_menu import option_menu
 
 def show_edhrec_from_cardname(cardname):
@@ -38,6 +39,7 @@ def show_collection():
 
 def show_compare():
     st.write("TODO: Select multiple saved collections and mess with them")
+    st.write(get_decklist("uHvbX5Y9NUWnTMBV4UOWpw"))  # Scion of the ur-dragon test deck
 
 def main():
     st.title("MTG Commander Analysis App")
