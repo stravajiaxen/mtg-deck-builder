@@ -23,7 +23,7 @@ class MyTestCase(unittest.TestCase):
             print(commander, "Price", info["Price"], "Number", info["Number"])
 
     def test_analyze(self):
-        commander = "Najeela, the Blade-Blossom"
+        commander = "Zaxara, the Exemplary"
         #commander = "Ziatora, the Incinerator"
         used_set = my_cards #free_cards
         recs = recommended_cards(used_set, commander)

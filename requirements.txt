@@ -1,5 +1,4 @@
 requests
-beautifulsoup4
-networkx
-sympy
-mpmath
+streamlit
+requests-cache
+pandas
