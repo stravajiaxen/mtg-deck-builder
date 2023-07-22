@@ -1,10 +1,7 @@
-from urllib.parse import urljoin
-import requests
-import requests_cache
 import pandas as pd
 import os
 
-requests_cache.install_cache("api_cache")
+
 
 location = r"C:\Users\matts\Documents\coding\mtg_deck_builder"
 fname = "All_Cards_2023_Apr_15_18-35.csv"
@@ -620,62 +617,3 @@ Zur the Enchanter
 """.strip().split("\n")
 
 
-def edhrec_stringify(cardname):
-    """
-    Gets the EDHREC url given a cardname
-
-    :param cardname: The name of the card
-    :return:
-    """
-
-    deletions = [",", "'", '"', "&"]
-    for c in deletions:
-        cardname = cardname.replace(c, "")
-    cardname = cardname.lower()
-    cardname = "-".join(cardname.split())
-    return cardname
-
-def get_edhrec_url(cardname):
-    return urljoin("https://edhrec.com/commanders/", edhrec_stringify(cardname))
-
-def recommended_cards(mine, commander):
-    cards = set(get_edhrec_commander_analysis(commander, format="basic"))
-    owned_cards = set(mine.Name)
-    got_em = owned_cards.intersection(cards)
-    full_df = mine[mine["Name"].isin(got_em)]
-    full_df["Price"] = full_df["Price"].str[1:].astype(float)
-    full_df = full_df.drop_duplicates(subset=["Name"])
-    price = full_df["Price"].sum()
-    return {"Number": len(got_em), "Price": price, "Cards": got_em}
-
-def get_edhrec_commander_analysis(cardname, format="basic"):
-    url = f"https://json.edhrec.com/pages/commanders/{edhrec_stringify(cardname)}.json"
-    response = requests.get(url)
-    groups = {}
-    for group in response.json()["container"]["json_dict"]["cardlists"]:
-        groupname = group["header"]
-        cards = []
-        for card in group["cardviews"]:
-            cards.append(card["name"])
-        groups[groupname] = cards
-    if format == "basic":
-        def flatten(l):
-            return [item for sublist in l for item in sublist]
-        return flatten(groups.values())
-    else:
-        return groups
-
-def get_edhrec_decklinks(cardname):
-    url = f"https://json.edhrec.com/pages/decks/{edhrec_stringify(cardname)}.json"
-    response = requests.get(url)
-    links = []
-    for item in response.json()["table"]:
-        links.append(urljoin("https://edhrec.com/deckpreview/", item["urlhash"]))
-    return links
-
-def get_edhrec_decklist(url):
-    url = url.strip("/")
-    hash = url.split("/")[-1]
-    url = f"https://edhrec.com/api/deckpreview/{hash}"
-    response = requests.get(url)
-    return response.json()["cards"]

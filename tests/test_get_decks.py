@@ -1,9 +1,9 @@
 import unittest
 
+from builder.compare import recommended_cards
+from builder.edhrec import get_edhrec_url, get_edhrec_commander_analysis, get_edhrec_decklinks, get_edhrec_decklist
 from builder.lists import *
-import vcr
-from operator import itemgetter
-import time
+
 test_card = top_commanders_2_years[0]
 
 class MyTestCase(unittest.TestCase):

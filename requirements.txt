@@ -2,3 +2,8 @@ requests
 streamlit
 requests-cache
 pandas
+sqlalchemy
+# sqlite
+
+# Third Party Streamlit Apps
+streamlit-option-menu
