@@ -616,4 +616,4 @@ Zaxara, the Exemplary
 Zur the Enchanter
 """.strip().split("\n")
 
-
+# TODO: Replace this with https://json.edhrec.com/pages/commanders/year.json and week.json, month.json
