@@ -2,10 +2,10 @@ import pandas as pd
 import os
 
 
-
-location = r"C:\Users\matts\Documents\coding\mtg_deck_builder"
+location = os.path.dirname(__file__)
+# location = r"C:\Users\matts\Documents\coding\mtg_deck_builder"
 fname = "All_Cards_2023_Apr_15_18-35.csv"
-my_cards = pd.read_csv(os.path.join(location, fname), sep="\t")
+my_cards = pd.read_csv(os.path.join(location, os.pardir, fname), sep="\t")
 dont_use = [
     'Breena',
     'Millicent',

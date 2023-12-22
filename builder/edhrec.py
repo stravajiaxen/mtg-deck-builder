@@ -30,28 +30,46 @@ def get_edhrec_url(cardname):
     return urljoin("https://edhrec.com/commanders/", edhrec_stringify(cardname))
 
 
-@st.cache_data(persist="disk")
 def get_edhrec_commander_analysis(cardname):
     url = f"https://json.edhrec.com/pages/commanders/{edhrec_stringify(cardname)}.json"
     response = requests.get(url)
     cards_edh_df = pd.DataFrame(response.json()["cardlist"])
     cards = [card["name"] for card in response.json()["cardlist"]]
-    full_cards = get_edhrec_card_info(cards)
-    full_cards_info = pd.DataFrame(list(full_cards.json()["cards"].values()))
+
+    def split_list(input_list, max_size=299):
+        """
+        Split a list into sublists of specified maximum size.
+
+        Parameters:
+        - input_list: The list to be split.
+        - max_size: Maximum size of each sublist.
+
+        Returns:
+        A list of sublists.
+        """
+        return [input_list[i:i + max_size] for i in range(0, len(input_list), max_size)]
+    split_cards = split_list(cards)
+    dfs = []
+    for sublist in split_cards:
+        full_cards = get_edhrec_card_info(sublist)
+        full_cards_info = pd.DataFrame(list(full_cards.json()["cards"].values()))
+        dfs.append(full_cards_info)
+    full_cards_info = pd.concat(dfs, axis=0, ignore_index=True)
     merged = pd.merge(cards_edh_df, full_cards_info, on="name", how="outer")
     merged["deck_rate"] = merged["num_decks"] / merged["potential_decks"]
 
     def extract_tcgplayer_price(json_str):
         try:
-            json_obj = json_str#json.loads(json_str)
+            json_obj = json_str
             tcgplayer_price = json_obj.get('tcgplayer', {}).get('price', None)
             return tcgplayer_price
         except json.JSONDecodeError:
             return None
+        except:
+            return None
 
     merged['tcgplayer_price'] = merged['prices'].apply(extract_tcgplayer_price)
     return merged
-
     # Return Name, Type, Synergy, Inclusion Rate, Price
 
 
@@ -80,5 +98,5 @@ def get_edhrec_card_info(cardnames):
     return response
 
 if __name__ == '__main__':
-    cards = get_edhrec_commander_analysis("Krenko, Mob Boss")
+    cards = get_edhrec_commander_analysis("Kess, Dissident Mage")
     cards.to_csv("test.csv")

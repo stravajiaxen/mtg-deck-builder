@@ -9,19 +9,27 @@ import pandas as pd
 
 import requests
 
-@st.cache_data(persist="disk")
+# @st.cache_data(persist="disk")
 def get_collection():
-    return {
-        "Volrath, The Shapestealer": get_decklist("L_CrzCH_qUerNwVK5j-xFg"),
-        "Niv-Mizzet, Parun": get_decklist("RX2bhkt9wk6JkDuF164I2A"),
-        "Ezuri, Claw of Progress": get_decklist("zl1Xt5XLBEyTlGbUn-Mk0w"),
-        "Nicol Bolas, the Ravager": get_decklist("K8HGNiyIU02QogqrSYCcBg"),
-        "Sevinne, the Chronoclasm": get_original_cards("https://mtgjson.com/api/v5/decks/MysticIntellect_C19.json"),
-        "Commons": get_commons_from_sets(*["MOM", "ONE", "BRO", "DMU", "SNC", "NEO", "VOW",
+    volrath = [] # get_decklist("L_CrzCH_qUerNwVK5j-xFg")
+    niv = [] #get_decklist("RX2bhkt9wk6JkDuF164I2A")
+    ezuri = [] # get_decklist("zl1Xt5XLBEyTlGbUn-Mk0w")
+    nicky = [] # get_decklist("K8HGNiyIU02QogqrSYCcBg")
+    sevinne = [] # get_original_cards("https://mtgjson.com/api/v5/decks/MysticIntellect_C19.json")
+    commons = get_commons_from_sets(*["MOM", "ONE", "BRO", "DMU", "SNC", "NEO", "VOW",
                                         "MID", "AFR", "STX", "KHM", "ZNR", "WAR", "XLN",
                                         "HOU", "AKH", "AER", "DTK", "MH1", "MH2", "LTR",
-                                        "DMR", "JMP", "J22"]),
-        "Collection": list(my_cards["Name"]),
+                                        "DMR", "JMP", "J22"])
+    collection = list(my_cards["Name"])
+    return {
+        "Volrath, The Shapestealer": volrath,
+        "Niv-Mizzet, Parun": niv,
+        "Ezuri, Claw of Progress": ezuri,
+        "Nicol Bolas, the Ravager": nicky,
+        "Sevinne, the Chronoclasm": sevinne,
+        "Commons": commons,
+        "Collection": collection,
+        "all": list(commons + collection),
     }
 
 collections = get_collection()
@@ -47,10 +55,23 @@ def show_commanders():
     # I can view a list of commanders and compare them to my collection
     commander_list = top_commanders_2_years  # TODO: Make this a dropdown
     selected_commander = st.selectbox("Choose a commander", commander_list)
+    alternative_commander = st.text_input("Enter a custom commander")
+    if st.button("Use Alternate Commander"):
+        selected_commander = alternative_commander
     #comparison = recommended_cards(my_cards, selected_commander)
-    st.write(f"Useful Cards I own for {selected_commander}:")
     commander_recs = get_edhrec_commander_analysis(selected_commander)
-    st.write(commander_recs[commander_recs["name"].isin(my_cards["Name"])])
+    card_collection = collections["all"]
+    relevant_cards = commander_recs[commander_recs["name"].isin(card_collection)]
+    missing_cards = commander_recs[~commander_recs["name"].isin(card_collection)]
+    columns_to_keep = ["synergy", "tcgplayer_price", "name", "rarity", "salt", "primary_type", "deck_rate"]
+    relevant_cards = relevant_cards.drop(columns=relevant_cards.columns.difference(columns_to_keep))
+    missing_cards = missing_cards.drop(columns=missing_cards.columns.difference(columns_to_keep))
+    st.write(f"Useful Cards I own for {selected_commander}.")
+    st.write(f"(Total Price: ${sum(relevant_cards['tcgplayer_price'])})")
+    st.write(f"(Total Number Good Cards: {len(relevant_cards[relevant_cards['deck_rate'] > 0.4])}")
+    st.write(relevant_cards)
+    st.write(f"Missing Cards from {selected_commander}")
+    st.write(missing_cards)
     #st.write(my_cards[my_cards["Name"].isin(comparison["Cards"])])
 
 def show_collection():
