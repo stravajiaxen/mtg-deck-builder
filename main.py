@@ -95,7 +95,7 @@ def main():
     st.title("MTG Commander Analysis App")
     with st.sidebar:
         selected = option_menu("Main Menu", ["Commanders", 'Collection', 'Compare'],
-                               icons=['house', 'gear', 'house'], menu_icon="cast", default_index=1)
+                               icons=['house', 'gear', 'house'], menu_icon="cast", default_index=0)
         st.write(selected)
 
     if selected == "Commanders":
