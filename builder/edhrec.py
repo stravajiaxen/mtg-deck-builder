@@ -30,8 +30,24 @@ def get_edhrec_url(cardname):
     return urljoin("https://edhrec.com/commanders/", edhrec_stringify(cardname))
 
 
-def get_edhrec_commander_analysis(cardname):
-    url = f"https://json.edhrec.com/pages/commanders/{edhrec_stringify(cardname)}.json"
+def get_edhrec_commander_analysis(cardname, theme=None, budget=None):
+    # Create the appropriate URL based on the cardname, theme, and budget
+    url = f"https://json.edhrec.com/pages/commanders/{edhrec_stringify(cardname)}"
+    if theme and theme.strip() and theme.lower() == "any":
+        theme = None
+    if budget and budget.strip() and budget.lower() == "any":
+        budget = None
+    if theme and theme.strip():
+        theme = theme.strip()
+        url += "/"
+        url += theme.lower()
+    if budget and budget.strip():
+        budget = budget.strip()
+        url += "/"
+        url += budget.lower()
+    url += ".json"
+
+    # Get the recommended cards
     response = requests.get(url)
     cards_edh_df = pd.DataFrame(response.json()["cardlist"])
     cards = [card["name"] for card in response.json()["cardlist"]]

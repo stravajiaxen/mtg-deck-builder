@@ -55,11 +55,13 @@ def show_commanders():
     # I can view a list of commanders and compare them to my collection
     commander_list = top_commanders_2_years  # TODO: Make this a dropdown
     selected_commander = st.selectbox("Choose a commander", commander_list)
+    theme = st.text_input("(Optional) Select a Theme:")
+    budget = st.selectbox("Choose a budget", ["Any", "Budget", "Expensive"])
     alternative_commander = st.text_input("Enter a custom commander")
     if st.button("Use Alternate Commander"):
         selected_commander = alternative_commander
     #comparison = recommended_cards(my_cards, selected_commander)
-    commander_recs = get_edhrec_commander_analysis(selected_commander)
+    commander_recs = get_edhrec_commander_analysis(selected_commander, theme, budget)
     card_collection = collections["all"]
     relevant_cards = commander_recs[commander_recs["name"].isin(card_collection)]
     missing_cards = commander_recs[~commander_recs["name"].isin(card_collection)]
