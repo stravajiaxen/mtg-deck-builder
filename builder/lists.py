@@ -4,18 +4,18 @@ import os
 
 location = os.path.dirname(__file__)
 # location = r"C:\Users\matts\Documents\coding\mtg_deck_builder"
-fname = "All_Cards_2023_Apr_15_18-35.csv"
-my_cards = pd.read_csv(os.path.join(location, os.pardir, fname), sep="\t")
-dont_use = [
-    'Breena',
-    'Millicent',
-    'Niv',
-    'Osgir',
-    'Captain ngathrod',
-    'Chulane',
-]
-free_cards = my_cards[~my_cards["List name"].isin(dont_use)]
-free_cards = free_cards.drop(free_cards[free_cards["Name"] == "The Locust God"].index)
+fname = "moxfield_haves_2023-12-29-2131Z.csv"
+my_cards = pd.read_csv(os.path.join(location, os.pardir, fname))
+#dont_use = [
+#    'Breena',
+#    'Millicent',
+#    'Niv',
+#    'Osgir',
+#    'Captain ngathrod',
+#    'Chulane',
+#]
+#free_cards = my_cards[~my_cards["List name"].isin(dont_use)]
+#free_cards = free_cards.drop(free_cards[free_cards["Name"] == "The Locust God"].index)
 
 top_commanders_today = """
 Atraxa, Praetors' Voice
